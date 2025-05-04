@@ -19,13 +19,16 @@ import {
   SidebarMenuItem,
   SidebarRail,
 } from "@/components/ui/sidebar"
+import { Button } from "./ui/button";
+import { useRouter } from "next/navigation";
+import { useAuth } from "@/context/AuthContext";
 
 // This is sample data.
 const data = {
   versions: ["1.0.1", "1.1.0-alpha", "2.0.0-beta1"],
   navMain: [
     {
-      title: "Task Management",
+      title: "Dashboard",
       url: "#",
       items: [
         {
@@ -33,20 +36,9 @@ const data = {
           url: "/dashboard",
         },
         {
-          title: "Assigne Task",
+          title: "Task Management",
           url: "/dashboard/task",
         },
-      ],
-    },
-    {
-      title: "Building Your Application",
-      url: "#",
-      items: [
-        {
-          title: "Routing",
-          url: "#",
-        },
-       
       ],
     }, 
   ],
@@ -55,6 +47,13 @@ const data = {
 export function AppSidebar({
   ...props
 }) {
+  const router = useRouter();
+ const { logout } = useAuth();
+  
+  const handleLogout = () => { 
+    logout();  
+  };
+
   return (
     <Sidebar {...props}>
       <SidebarHeader> 
@@ -101,6 +100,17 @@ export function AppSidebar({
             </SidebarGroup>
           </Collapsible>
         ))}
+        <aside className="flex flex-col w-64 h-screen border-r bg-background">
+      <div className="flex-1 p-4 overflow-y-auto">
+        {/* Sidebar content */}
+      </div>
+
+      <div className="p-4 border-t">
+        <Button variant="outline" className="w-full" onClick={handleLogout}>
+          Logout
+        </Button>
+      </div>
+    </aside>
       </SidebarContent>
       <SidebarRail />
     </Sidebar>

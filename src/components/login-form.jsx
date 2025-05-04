@@ -80,9 +80,7 @@ const notify = useNotifyService();
                 Sign up
               </a>
             </div>
-          </form>
-          <Button onClick={() => notify.success("User created")}>Success</Button>
-      <Button onClick={() => notify.error("Failed to load")}>Error</Button>
+          </form> 
         </CardContent>
       </Card>
     </div>

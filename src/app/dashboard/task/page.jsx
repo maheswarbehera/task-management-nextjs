@@ -103,6 +103,7 @@ const Page = () => {
     if (res.error) return notify.error(res.error);
 
     notify.success(res.message);
+    if(res.data.email) return notify.success("Email sent sucessfull")
     setIsFormOpen(false);
     fetchTasks();
   };
