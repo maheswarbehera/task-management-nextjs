@@ -19,7 +19,7 @@ export function SignUpForm({ className, ...props }) {
   const [username, setUsername] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
- 
+  const [loading, setLoading] = useState(false);
   const notify = useNotifyService(); 
   const router = useRouter();
 
@@ -29,6 +29,7 @@ export function SignUpForm({ className, ...props }) {
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await UserService.UserSignup({
         email,
@@ -44,6 +45,8 @@ export function SignUpForm({ className, ...props }) {
       }, 2000); 
     } catch (error) {
       notify.error(error?.response?.data?.message || "Signup failed");
+    } finally {
+    setLoading(false);
     }
   };
 
@@ -92,8 +95,8 @@ export function SignUpForm({ className, ...props }) {
                   required
                 />
               </div>
-              <Button type="submit" className="w-full">
-                Sign Up
+              <Button type="submit" className="w-full" disabled={loading}>
+                {loading ? "Signing up..." : "Sign Up"}
               </Button>
             </div>
             <div className="mt-4 text-center text-sm">

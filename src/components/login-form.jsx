@@ -22,6 +22,7 @@ export function LoginForm({
 
   const [username, setUsername] = useState('admin');
   const [password, setPassword] = useState('admin123');
+  const [loading, setLoading] = useState(false);
   const { login } = useAuth();
 const notify = useNotifyService();
 
@@ -31,6 +32,7 @@ const notify = useNotifyService();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setLoading(true);
     try {
       const res = await UserService.UserLogin( { username, password });
       login(res.data.accessToken); 
@@ -38,6 +40,8 @@ const notify = useNotifyService();
       notify.success(res.message)
     } catch (error) { 
       notify.error(error.response.data.message)
+    } finally {
+      setLoading(false);
     }
     
   };
@@ -69,8 +73,8 @@ const notify = useNotifyService();
                 <Input id="password" type="password" value={password} onChange={e => setPassword(e.target.value)} required />
               </div>
               <div className="flex flex-col gap-3">
-                <Button type="submit" className="w-full">
-                  Login
+              <Button type="submit" className="w-full" disabled={loading}>
+                  {loading ? "Logging in..." : "Login"}
                 </Button>
               
               </div>
