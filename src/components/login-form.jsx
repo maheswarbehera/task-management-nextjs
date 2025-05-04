@@ -13,7 +13,7 @@ import {
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { useNotifyService } from "@/lib/shared/service/notifyService";
-import axiosInstance from "../lib/api";
+import { UserService } from "@/services/UserService";
 
 export function LoginForm({
   className,
@@ -32,9 +32,10 @@ const notify = useNotifyService();
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      const res = await axiosInstance.post('/users/login', { username, password });
-      login(res.data.data.accessToken); 
-      notify.success(res.data.message)
+      const res = await UserService.UserLogin( { username, password });
+      login(res.data.accessToken); 
+      if(res.error) return notify.error(res.error)
+      notify.success(res.message)
     } catch (error) { 
       notify.error(error.response.data.message)
     }
@@ -76,7 +77,7 @@ const notify = useNotifyService();
             </div>
             <div className="mt-4 text-center text-sm">
               Don&apos;t have an account?{" "}
-              <a href="#" className="underline underline-offset-4">
+              <a href="/register" className="underline underline-offset-4">
                 Sign up
               </a>
             </div>

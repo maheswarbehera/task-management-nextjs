@@ -36,6 +36,8 @@ const Page = () => {
   const [isViewOpen, setIsViewOpen] = useState(false);
   const [isFormOpen, setIsFormOpen] = useState(false);
   const [isEditMode, setIsEditMode] = useState(false);
+  const [isFetching, setIsFetching] = useState(false);
+  const [isSubmitting, setIsSubmitting] = useState(false);
   const [taskFormData, setTaskFormData] = useState({
     title: "",
     description: "",
@@ -52,14 +54,18 @@ const Page = () => {
   }, []);
 
   const fetchTasks = async () => {
+    setIsFetching(true);
     const res = await TaskService.getAll();
+    setIsFetching(false);
     if (res.error) return notify.error(res.error);
     setTasks(res.data.tasks);
     notify.success(res.message);
   };
 
   const fetchUsers = async () => {
+    setIsFetching(true);
     const res = await UserService.getAll();
+    setIsFetching(false);
     if (res.error) return notify.error(res.error);
     setUsers(res.data.users);
     notify.success(res.message);
@@ -96,16 +102,17 @@ const Page = () => {
   };
 
   const handleFormSubmit = async () => {
+    setIsSubmitting(true);
     const res = isEditMode
       ? await TaskService.updateTask(taskFormData._id, taskFormData)
       : await TaskService.taskCreate(taskFormData);
+    setIsSubmitting(false);
 
     if (res.error) return notify.error(res.error);
-
     notify.success(res.message);
-    if(res.data.email) return notify.success("Email sent sucessfull")
     setIsFormOpen(false);
     fetchTasks();
+    if (res.data.email) return notify.success("Email sent successfully");
   };
 
   const getTaskById = async (id)=>{
@@ -127,29 +134,39 @@ const Page = () => {
         <TableCaption>A list of your recent Tasks.</TableCaption>
         <TableHeader>
           <TableRow>
-            {["No", "Title", "Description", "Priority", "Status", "Due Date", "Assigned To","Assigned By", "Action"].map((header, i) => (
+            {["No", "Title", "Description", "Priority", "Status", "Due Date", "Assigned To", "Assigned By", "Action"].map((header, i) => (
               <TableHead key={i}>{header}</TableHead>
             ))}
           </TableRow>
         </TableHeader>
         <TableBody>
-          {tasks.map((task, index) => (
-            <TableRow key={task._id}>
-              <TableCell>{index + 1}</TableCell>
-              <TableCell>{task.title}</TableCell>
-              <TableCell>{task.description}</TableCell>
-              <TableCell>{task.priority}</TableCell>
-              <TableCell>{task.status}</TableCell>
-              <TableCell>{task.dueDate}</TableCell>
-              <TableCell>{task.assigneeTo?.username}</TableCell>
-              <TableCell>{task.creator?.username}</TableCell>
-              <TableCell>
-                <Button className="me-2 bg-blue-600" onClick={() => { getTaskById(task._id); setIsViewOpen(true); }}>View</Button>
-                <Button className="me-2 bg-yellow-600" onClick={() => openEditForm(task)}>Edit</Button>
-                <Button className="bg-red-600" onClick={() => handleDelete(task._id)}>Delete</Button>
-              </TableCell>
+          {isFetching ? (
+            <TableRow>
+              <TableCell colSpan={9} className="text-center">Loading tasks...</TableCell>
             </TableRow>
-          ))}
+          ) : tasks.length === 0 ? (
+            <TableRow>
+              <TableCell colSpan={9} className="text-center">No tasks found.</TableCell>
+            </TableRow>
+          ) : (
+            tasks.map((task, index) => (
+              <TableRow key={task._id}>
+                <TableCell>{index + 1}</TableCell>
+                <TableCell>{task.title}</TableCell>
+                <TableCell>{task.description}</TableCell>
+                <TableCell>{task.priority}</TableCell>
+                <TableCell>{task.status}</TableCell>
+                <TableCell>{task.dueDate}</TableCell>
+                <TableCell>{task.assigneeTo?.username}</TableCell>
+                <TableCell>{task.creator?.username}</TableCell>
+                <TableCell>
+                  <Button className="me-2 bg-blue-600" onClick={() => { getTaskById(task._id); setIsViewOpen(true); }}>View</Button>
+                  <Button className="me-2 bg-yellow-600" onClick={() => openEditForm(task)}>Edit</Button>
+                  <Button className="bg-red-600" onClick={() => handleDelete(task._id)}>Delete</Button>
+                </TableCell>
+              </TableRow>
+            ))
+          )}
         </TableBody>
         <TableFooter></TableFooter>
       </Table>
@@ -203,7 +220,7 @@ const Page = () => {
             </select>
 
             <Label>Assign To</Label>
-            <select value={taskFormData.assigneeTo?._id} onChange={(e) => setTaskFormData({ ...taskFormData, assigneeTo: e.target.value })} className="w-full rounded-md border px-3 py-2">
+            <select value={taskFormData.assigneeTo?._id || taskFormData.assigneeTo} onChange={(e) => setTaskFormData({ ...taskFormData, assigneeTo: e.target.value })} className="w-full rounded-md border px-3 py-2">
               <option value="">Select Assign To</option>
               {users.map((user) => <option key={user._id} value={user._id}>{user.username}</option>)}
             </select>
@@ -213,8 +230,10 @@ const Page = () => {
           </div>
 
           <DialogFooter>
-            <Button onClick={() => setIsFormOpen(false)}>Cancel</Button>
-            <Button onClick={handleFormSubmit}>Save</Button>
+            <Button onClick={() => setIsFormOpen(false)} disabled={isSubmitting}>Cancel</Button>
+            <Button onClick={handleFormSubmit} disabled={isSubmitting}>
+              {isSubmitting ? "Saving..." : "Save"}
+            </Button>
           </DialogFooter>
         </DialogContent>
       </Dialog>

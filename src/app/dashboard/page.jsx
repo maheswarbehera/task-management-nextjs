@@ -16,6 +16,7 @@ export default function Page() {
   const [overdueTasks, setOverdueTasks] = useState([]);
 
   useEffect(() => {
+    document.title = "Dashboard"
     getTaskAssigner();
     getTaskCreator();
     getTaskDueDate();
