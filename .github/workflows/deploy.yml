@@ -3,7 +3,7 @@ name: Deploy Next.js to AWS EC2
 on:
   push:
     branches:
-      - master  # or "main" if your main branch is named so
+      - master
 
 jobs:
   deploy:
@@ -16,20 +16,19 @@ jobs:
       - name: Setup Node.js
         uses: actions/setup-node@v3
         with:
-          node-version: '18'  # Or whatever version you use
-
-      - name: Install dependencies
-        run: npm install
+          node-version: '18'
 
       - name: Build Next.js app
-        run: npm run build
+        run: |
+          npm install
+          npm run build
 
-      - name: Add EC2 to known hosts (optional but safer than disabling)
+      - name: Add EC2 to known hosts
         run: |
           mkdir -p ~/.ssh
           ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
-      - name: Deploy to EC2 via SSH
+      - name: SSH Deploy to EC2
         env:
           PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
         run: |
