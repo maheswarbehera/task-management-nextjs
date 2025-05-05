@@ -1,30 +1,35 @@
-name: Deploy Next.js to EC2
+name: CI/CD Pipeline
 
 on:
   push:
-    branches: 
-    - master
+    branches:
+      - master
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout Code
+        uses: actions/checkout@v3
 
-    - name: Setup SSH key
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
-
-    - name: Deploy to EC2
-      run: |
-        ssh -tt -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
-          "cd ~/task-management-nextjs && \
-          git pull origin master && \
-          npm install && \
-          npm run build && \
-          pm2 restart next-app || pm2 start npm --name 'next-app' -- start"
+      - name: Setup SSH Key
+        run: |
+          mkdir -p ~/.ssh
+          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
+          chmod 600 ~/.ssh/id_rsa
+          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+      - name: Print Host Info (Debug)
+        run: |
+          echo "User: ${{ secrets.SSH_USER }}"
+          echo "Host: ${{ secrets.SSH_HOST }}"
+          
+      - name: Deploy to EC2
+        run: |
+          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            cd ~/task-management-nextjs
+            git pull origin master
+            npm install
+            npm run build
+            pm2 restart all
+          EOF
