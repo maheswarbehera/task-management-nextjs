@@ -25,6 +25,7 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { UserService } from "@/services/UserService";
+import { useProtectedRoute } from "@/hooks/useProtectedRoute";
 
 const PRIORITY_OPTIONS = ["Low", "Medium", "High"];
 const STATUS_OPTIONS = ["Pending", "In Progress", "Completed"];
@@ -47,11 +48,14 @@ const Page = () => {
     dueDate: "",
   });
   const notify = useNotifyService();
+  const isAuthenticated = useProtectedRoute();
 
   useEffect(() => {
-    document.title = "Task Management";
+    if(isAuthenticated){
+      document.title = "Task Management";
     fetchTasks();
-  }, []);
+    }
+  }, [isAuthenticated]);
 
   const fetchTasks = async () => {
     setIsFetching(true);
@@ -122,7 +126,7 @@ const Page = () => {
     notify.success(res.message)
   }
     
-  
+  if (!isAuthenticated) return null;
   return (
     <>
       <header className="bg-background sticky top-0 flex h-16 items-center justify-between border-b px-4 z-10">

@@ -14,10 +14,10 @@ import {
   SidebarProvider,
   SidebarTrigger,
 } from "@/components/ui/sidebar";  
-import { ProtectedRoute } from "@/components/ProtectedRoute";
+
 export default function DashboardLayout({ children }) {
   return (
-    <ProtectedRoute>
+
     <SidebarProvider>
       <AppSidebar />
       <SidebarInset className="flex flex-col flex-1">
@@ -38,7 +38,6 @@ export default function DashboardLayout({ children }) {
         </header>
         <main className="flex-1 p-4">{children}</main>
       </SidebarInset>
-    </SidebarProvider>
-    </ProtectedRoute> 
+    </SidebarProvider> 
   );
 }

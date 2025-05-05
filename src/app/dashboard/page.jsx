@@ -9,18 +9,21 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/ui/card";
+import { useProtectedRoute } from "@/hooks/useProtectedRoute";
 
 export default function Page() {
   const [assignees, setAssignees] = useState([]);
   const [creators, setCreators] = useState([]);
   const [overdueTasks, setOverdueTasks] = useState([]);
-
+  const isAuthenticated = useProtectedRoute();
   useEffect(() => {
-    document.title = "Dashboard"
-    getTaskAssigner();
-    getTaskCreator();
-    getTaskDueDate();
-  }, []);
+    if(isAuthenticated){
+      document.title = "Dashboard"
+      getTaskAssigner();
+      getTaskCreator();
+      getTaskDueDate();
+    }
+  }, [isAuthenticated]);
 
   const getTaskAssigner = async () => {
     const res = await DashboardService.taskAssigneeToUser();
@@ -37,6 +40,7 @@ export default function Page() {
     if (!res.error) setOverdueTasks(res.data.tasks || []);
   };
 
+  if (!isAuthenticated) return null;
   return (
     <div className="p-6">
       <h2 className="text-xl font-semibold mb-4">Dashboard Overview</h2>
