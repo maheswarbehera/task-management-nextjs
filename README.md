@@ -1,39 +1,154 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
-## Getting Started
 
-First, run the development server:
+# 📝 Task Management System
+
+A full-stack web app for managing tasks with authentication, CRUD operations, filtering, and team collaboration features.
+
+Live Demo:
+
+🔗 **Client**: [https://maheswar.co.in](https://maheswar.co.in)
+
+🔗 **API**: [https://api.maheswar.co.in](https://api.maheswar.co.in)
+
+---
+
+## ⚙️ Tech Stack
+
+| Layer    | Technology                      |
+| -------- | ------------------------------- |
+| Frontend | Next.js, TailwindCSS, ShadCN UI |
+| Backend  | Node.js, Express                |
+| Database | MongoDB                         |
+| Auth     | JWT                             |
+| Alerts   | SweetAlert2, Toasts             |
+
+---
+
+## 🚀 Local Setup Instructions
+
+### 1. Clone Repositories
 
 ```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+# Frontend
+git clone https://github.com/maheswarbehera/task-management-nextjs.git
+cd task-management-nextjs
+
+# Backend
+git clone https://github.com/maheswarbehera/task-management-api.git
+cd task-management-api
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+---
 
-You can start editing the page by modifying `app/page.js`. The page auto-updates as you edit the file.
+### 2. Install Dependencies
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+```bash
+npm install
+# or
+yarn install
+```
 
-## Learn More
+---
 
-To learn more about Next.js, take a look at the following resources:
+### 3. Add Environment Variables
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+#### 🔐 Backend `.env`
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+Create `.env` in the backend root and add:
 
-## Deploy on Vercel
+```env
+BASE_URL=/api
+API_VERSION=v1
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+HOST=localhost
+PORT=8080
+CORS_ORIGIN=http://localhost:3000
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+ACCESS_TOKEN_SECRET=your_strong_secret_key
+ACCESS_TOKEN_EXPIRY=1d
 
+DB_NAME=task_management
+MONGO_DB_URI=mongodb://localhost:27017
 
-cicd pipeline test
+# Optional for production
+# MONGO_DB_URI=mongodb+srv://<user>:<pass>@cluster.mongodb.net/task_management
+
+EMAIL_SERVICE=smtp.gmail.com
+EMAIL_USER=your_email@gmail.com
+EMAIL_PASSWORD=your_app_password
+```
+
+#### 🌐 Frontend `.env.local`
+
+```env
+NEXT_PUBLIC_API_URL=http://localhost:8080/api/v1
+```
+
+---
+
+### 4. Run the App
+
+```bash
+# Backend
+cd task-management-api
+npm run dev
+
+# Frontend
+cd task-management-nextjs
+npm run dev
+```
+
+---
+
+## ✅ Features
+
+* 🔐 User Authentication
+* 📝 Task Create / Read / Update / Delete
+* 👥 Assign Tasks to Users
+* 🔔 Email Notifications (on assignment)
+* 🔍 Search and API-based Filtering:
+
+  * By Status
+  * By Priority
+  * By Due Date
+* 📱 Responsive UI
+* 🎨 Modals and Alerts using ShadCN & SweetAlert2
+
+---
+
+## 💡 Design & Approach
+
+* **Modular Service Layer** for task/user logic (frontend & backend).
+* **Protected Routes** using custom `useProtectedRoute` hook.
+* **API-Driven Filters** using query strings for scalability.
+* **Dynamic Task Modals** for create/edit/view operations.
+* **Flexible Email Service** using SMTP via Gmail or similar.
+
+---
+
+## 📌 Assumptions & Trade-offs
+
+**Assumptions:**
+
+* Each task has a single assignee.
+* JWT stored in localStorage.
+* Task creator and assignee must be registered users.
+
+**Trade-offs:**
+
+* No pagination yet (can affect performance at scale).
+* No role-based access control (admin/user).
+* Basic form validation only.
+
+---
+
+## 🛠️ Possible Improvements
+
+* Pagination & Sorting
+* Role-Based Permissions
+* Realtime updates with WebSockets
+* Mobile-first responsive layout
+* Full test suite (unit + integration)
+
+---
+

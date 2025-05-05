@@ -303,13 +303,13 @@ const Page = () => {
           </DialogHeader>
           <div className="space-y-4">
             <Label>Title</Label>
-            <Input value={taskFormData.title} onChange={(e) => setTaskFormData({ ...taskFormData, title: e.target.value })} />
+            <Input value={taskFormData.title} onChange={(e) => setTaskFormData({ ...taskFormData, title: e.target.value })} placeholder="Title"/>
 
             <Label>Description</Label>
-            <Input value={taskFormData.description} onChange={(e) => setTaskFormData({ ...taskFormData, description: e.target.value })} />
+            <Input value={taskFormData.description} onChange={(e) => setTaskFormData({ ...taskFormData, description: e.target.value })} placeholder="Description"/>
 
             <Label>Priority</Label>
-            <select value={taskFormData.priority} onChange={(e) => setTaskFormData({ ...taskFormData, priority: e.target.value })} className="w-full rounded-md w-full md:w-auto border px-3 py-2">
+            <select value={taskFormData.priority} onChange={(e) => setTaskFormData({ ...taskFormData, priority: e.target.value })} className="w-full rounded-md border px-3 py-2">
               <option value="">Select Priority</option>
               {PRIORITY_OPTIONS.map(opt => <option key={opt}>{opt}</option>)}
             </select>
