@@ -21,12 +21,23 @@ jobs:
         ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
 
     - name: Deploy to EC2
-      run: |
-        ssh -tt -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} << 'EOF'
-          cd ~/task-management-nextjs
-          git pull origin master
-          npm install
-          npm run build
-          pm2 restart next-app || pm2 start npm --name "next-app" -- start
-        EOF
+  run: |
+    ssh -tt -o StrictHostKeyChecking=no ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "
+      set -e
+      echo '🚀 Pulling latest code...'
+      cd ~/task-management-nextjs
+      git pull origin master
+
+      echo '📦 Installing dependencies...'
+      npm install
+
+      echo '🔧 Building project...'
+      npm run build
+
+      echo '🚀 Starting/Restarting PM2 app...'
+      pm2 restart next-app || pm2 start npm --name 'next-app' -- start
+
+      echo '✅ Deployment completed!'
+    "
+
 
