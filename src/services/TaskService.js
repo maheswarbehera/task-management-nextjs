@@ -66,10 +66,35 @@ const deleteTask = async (id) => {
     }
 }
 
+const searchTask = async (query) => {
+    try {
+        const res = await axiosInstance.get(`/tasks/search?query=${query}`); 
+        return res.data;
+    } catch (error) {
+        console.error("Delete task error:", error.response?.data.message || error.message);
+        return {
+            error: error.response?.data.message || "An error occurred.",
+        };
+    }
+}
+const filterTask = async (query) => {
+    try {
+        const res = await axiosInstance.get(`/tasks/filter?${query}`); 
+        return res.data;
+    } catch (error) {
+        console.error("Delete task error:", error.response?.data.message || error.message);
+        return {
+            error: error.response?.data.message || "An error occurred.",
+        };
+    }
+}
+
 export const TaskService = {
     getAll,
     getById,
     taskCreate,
     deleteTask,
-    updateTask
+    updateTask,
+    searchTask,
+    filterTask
 };

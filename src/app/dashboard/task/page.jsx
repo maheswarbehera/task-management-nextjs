@@ -47,6 +47,13 @@ const Page = () => {
     assigneeTo: "",
     dueDate: "",
   });
+  const [searchTerm, setSearchTerm] = useState("");
+  const [filters, setFilters] = useState({
+    status: "",
+    priority: "",
+    dueDate: "",
+  });
+
   const notify = useNotifyService();
   const isAuthenticated = useProtectedRoute();
 
@@ -56,6 +63,38 @@ const Page = () => {
     fetchTasks();
     }
   }, [isAuthenticated]);
+
+  const searchTask = async (e) => {
+    const term = e.target.value;
+    console.log(term)
+    if(term){
+      setSearchTerm(term);
+      setIsFetching(true);
+      const res = await TaskService.searchTask(term);
+      if (res.error) return notify.error(res.error); 
+      setTasks(res.data);
+      setIsFetching(false);
+    }else{
+      setSearchTerm("")
+      fetchTasks()
+    }
+    // notify.success(res.message);
+  };
+  
+  const filterTask = async (status, priority, dueDate) => {
+    setIsFetching(true);
+    const queryParams = new URLSearchParams();
+
+    if (status) queryParams.append("status", status);
+    if (priority) queryParams.append("priority", priority);
+    if (dueDate) queryParams.append("dueDate", dueDate);
+    const res = await TaskService.filterTask(queryParams.toString());
+    
+    if (res.error) return notify.error(res.error);
+    setTasks(res.data.tasks);
+    setIsFetching(false);
+    notify.success(res.message);
+  };
 
   const fetchTasks = async () => {
     setIsFetching(true);
@@ -133,6 +172,62 @@ const Page = () => {
         <span className="text-xl font-semibold">Task Management</span>
         <Button onClick={openAddForm} className="bg-green-600">Add Task</Button>
       </header>
+
+      {/* Search and Filter Section */}
+      <div className="flex space-x-4 p-4">
+        <Input
+          placeholder="Search by title or description"
+          value={searchTerm}
+          onChange={searchTask}
+          className="w-1/3"
+        />
+ 
+        <select
+          className="border px-3 py-2 rounded"
+          value={filters.status}
+          onChange={(e) => setFilters({ ...filters, status: e.target.value })}
+        >
+          <option value="">All Status</option>
+          {STATUS_OPTIONS.map((status) => (
+            <option key={status} value={status}>{status}</option>
+          ))}
+        </select>
+
+        <select
+          className="border px-3 py-2 rounded"
+          value={filters.priority}
+          onChange={(e) => setFilters({ ...filters, priority: e.target.value })}
+        >
+          <option value="">All Priorities</option>
+          {PRIORITY_OPTIONS.map((priority) => (
+            <option key={priority} value={priority}>{priority}</option>
+          ))}
+        </select>
+
+        <input
+          type="date"
+          className="border px-3 py-2 rounded"
+          value={filters.dueDate}
+          onChange={(e) => setFilters({ ...filters, dueDate: e.target.value })}
+        />
+
+        <Button
+          onClick={() => filterTask(filters.status, filters.priority, filters.dueDate)}
+        >
+          Apply Filter
+        </Button>
+
+        <Button
+          variant="outline"
+          onClick={() => {
+            setSearchTerm("")
+            setFilters({ status: "", priority: "", dueDate: "" });
+            fetchTasks(); 
+          }}
+        >
+          Clear Filter
+        </Button> 
+      </div>
 
       <Table>
         <TableCaption>A list of your recent Tasks.</TableCaption>
@@ -234,9 +329,11 @@ const Page = () => {
           </div>
 
           <DialogFooter>
-            <Button onClick={() => setIsFormOpen(false)} disabled={isSubmitting}>Cancel</Button>
             <Button onClick={handleFormSubmit} disabled={isSubmitting}>
-              {isSubmitting ? "Saving..." : "Save"}
+              {isSubmitting ? "Saving..." : isEditMode ? "Save Changes" : "Create Task"}
+            </Button>
+            <Button variant="outline" onClick={() => setIsFormOpen(false)}>
+              Cancel
             </Button>
           </DialogFooter>
         </DialogContent>
