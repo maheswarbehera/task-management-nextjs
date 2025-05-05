@@ -174,16 +174,16 @@ const Page = () => {
       </header>
 
       {/* Search and Filter Section */}
-      <div className="flex space-x-4 p-4">
+      <div className="flex flex-col md:flex-row md:items-center md:space-x-4 space-y-4 md:space-y-0 p-4">
         <Input
           placeholder="Search by title or description"
           value={searchTerm}
           onChange={searchTask}
-          className="w-1/3"
+          className="w-full md:w-1/3"
         />
  
         <select
-          className="border px-3 py-2 rounded"
+          className="w-full md:w-auto border px-3 py-2 rounded"
           value={filters.status}
           onChange={(e) => setFilters({ ...filters, status: e.target.value })}
         >
@@ -194,7 +194,7 @@ const Page = () => {
         </select>
 
         <select
-          className="border px-3 py-2 rounded"
+          className="w-full md:w-auto border px-3 py-2 rounded"
           value={filters.priority}
           onChange={(e) => setFilters({ ...filters, priority: e.target.value })}
         >
@@ -206,18 +206,20 @@ const Page = () => {
 
         <input
           type="date"
-          className="border px-3 py-2 rounded"
+          className="w-full md:w-auto border px-3 py-2 rounded"
           value={filters.dueDate}
           onChange={(e) => setFilters({ ...filters, dueDate: e.target.value })}
         />
 
         <Button
+        className="w-full md:w-auto"
           onClick={() => filterTask(filters.status, filters.priority, filters.dueDate)}
         >
           Apply Filter
         </Button>
 
         <Button
+        className="w-full md:w-auto"
           variant="outline"
           onClick={() => {
             setSearchTerm("")
@@ -307,7 +309,7 @@ const Page = () => {
             <Input value={taskFormData.description} onChange={(e) => setTaskFormData({ ...taskFormData, description: e.target.value })} />
 
             <Label>Priority</Label>
-            <select value={taskFormData.priority} onChange={(e) => setTaskFormData({ ...taskFormData, priority: e.target.value })} className="w-full rounded-md border px-3 py-2">
+            <select value={taskFormData.priority} onChange={(e) => setTaskFormData({ ...taskFormData, priority: e.target.value })} className="w-full rounded-md w-full md:w-auto border px-3 py-2">
               <option value="">Select Priority</option>
               {PRIORITY_OPTIONS.map(opt => <option key={opt}>{opt}</option>)}
             </select>
