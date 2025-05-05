@@ -10,32 +10,30 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout Code
+      - name: Checkout code
         uses: actions/checkout@v3
 
-      - name: Setup SSH Key
-        run: |
-          mkdir -p ~/.ssh
-          echo "${{ secrets.SSH_PRIVATE_KEY }}" > ~/.ssh/id_rsa
-          chmod 600 ~/.ssh/id_rsa
-          ssh-keyscan -H ${{ secrets.SSH_HOST }} >> ~/.ssh/known_hosts
+      - name: Setup SSH and Deploy
         env:
           SSH_PRIVATE_KEY: ${{ secrets.SSH_PRIVATE_KEY }}
+          SSH_USER: ${{ secrets.SSH_USER }}
+          SSH_HOST: ${{ secrets.SSH_HOST }}
+        run: |
+          echo "$SSH_PRIVATE_KEY" > key.pem
+          chmod 600 key.pem
 
-      - name: Print Host Info (Debug)
-        run: |
-          echo "User: ${{ secrets.SSH_USER }}"
-          echo "Host: ${{ secrets.SSH_HOST }}"
-          
-      - name: Deploy to EC2
-        run: |
-          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          # Add host to known_hosts
+          ssh-keyscan -H "$SSH_HOST" >> ~/.ssh/known_hosts
+
+          echo "🚀 Starting SSH deployment..."
+
+          ssh -i key.pem -o StrictHostKeyChecking=no $SSH_USER@$SSH_HOST 'bash -s' <<'EOF'
             set -e
-            echo "🚀 Starting deployment..."
+            echo "✅ Connected to EC2. Starting deployment..."
             cd ~/task-management-nextjs
             git pull origin master
             npm install
             npm run build
             pm2 restart next-app || pm2 start npm --name "next-app" -- start
-            echo "✅ Deployment complete!"
+            echo "🎉 Deployment complete!"
           EOF
