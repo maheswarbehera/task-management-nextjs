@@ -1,30 +1,48 @@
-name: Deploy Next.js to EC2
+name: Deploy Next.js to AWS EC2
 
 on:
   push:
-    branches: 
-    - master
+    branches:
+      - master  # or "main" if your main branch is named so
 
 jobs:
   deploy:
     runs-on: ubuntu-latest
 
     steps:
-    - name: Checkout code
-      uses: actions/checkout@v3
+      - name: Checkout code
+        uses: actions/checkout@v3
 
-    - name: Setup SSH key
-      run: |
-        mkdir -p ~/.ssh
-        echo "${{ secrets.EC2_SSH_KEY }}" > ~/.ssh/id_rsa
-        chmod 600 ~/.ssh/id_rsa
-        ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '18'  # Or whatever version you use
 
-    - name: Deploy to EC2
-      run: |
-        ssh ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} \
-          "cd ~/task-management-nextjs && \
-          git pull origin master && \
-          npm install && \
-          npm run build && \
-          pm2 restart next-app || pm2 start npm --name 'next-app' -- start"
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build Next.js app
+        run: npm run build
+
+      - name: Add EC2 to known hosts (optional but safer than disabling)
+        run: |
+          mkdir -p ~/.ssh
+          ssh-keyscan -H ${{ secrets.EC2_HOST }} >> ~/.ssh/known_hosts
+
+      - name: Deploy to EC2 via SSH
+        env:
+          PRIVATE_KEY: ${{ secrets.EC2_SSH_KEY }}
+        run: |
+          echo "$PRIVATE_KEY" > key.pem
+          chmod 600 key.pem
+
+          ssh -i key.pem -tt ${{ secrets.EC2_USER }}@${{ secrets.EC2_HOST }} "
+            set -e
+            echo '🚀 Deploying Next.js App'
+            cd ~/task-management-nextjs
+            git pull origin master
+            npm install
+            npm run build
+            pm2 restart next-app || pm2 start npm --name 'next-app' -- start
+            echo '✅ Deployment completed!'
+          "
