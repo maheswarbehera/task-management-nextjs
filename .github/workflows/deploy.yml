@@ -29,10 +29,13 @@ jobs:
           
       - name: Deploy to EC2
         run: |
-          ssh ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+          ssh -o StrictHostKeyChecking=no ${{ secrets.SSH_USER }}@${{ secrets.SSH_HOST }} << 'EOF'
+            set -e
+            echo "🚀 Starting deployment..."
             cd ~/task-management-nextjs
             git pull origin master
             npm install
             npm run build
-            pm2 restart all
+            pm2 restart next-app || pm2 start npm --name "next-app" -- start
+            echo "✅ Deployment complete!"
           EOF
