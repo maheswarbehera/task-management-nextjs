@@ -35,8 +35,8 @@ const notify = useNotifyService();
     setLoading(true);
     try {
       const res = await UserService.UserLogin( { username, password });
+      if(res.error) return notify.error(res.error) 
       login(res.data.accessToken); 
-      if(res.error) return notify.error(res.error)
       notify.success(res.message)
     } catch (error) { 
       notify.error(error.response.data.message)
