@@ -58,7 +58,7 @@ const notify = useNotifyService();
           <form onSubmit={handleSubmit}>
             <div className="flex flex-col gap-6">
               <div className="grid gap-3">
-                <Label htmlFor="username">Email</Label>
+                <Label htmlFor="username">Username</Label>
                 <Input id="username" type="text"value={username} onChange={e => setUsername(e.target.value)} placeholder="username" required />
               </div>
               <div className="grid gap-3">

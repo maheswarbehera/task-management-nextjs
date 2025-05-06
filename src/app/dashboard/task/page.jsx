@@ -257,7 +257,7 @@ const Page = () => {
                 <TableCell>{task.description}</TableCell>
                 <TableCell>{task.priority}</TableCell>
                 <TableCell>{task.status}</TableCell>
-                <TableCell>{task.dueDate}</TableCell>
+                <TableCell>{new Date(task.dueDate).toLocaleDateString("en-GB")}</TableCell>
                 <TableCell>{task.assigneeTo?.username}</TableCell>
                 <TableCell>{task.creator?.username}</TableCell>
                 <TableCell>
@@ -284,7 +284,7 @@ const Page = () => {
             <p><strong>Description:</strong> {viewTask?.description}</p>
             <p><strong>Priority:</strong> {viewTask?.priority}</p>
             <p><strong>Status:</strong> {viewTask?.status}</p>
-            <p><strong>Due Date:</strong> {viewTask?.dueDate}</p>
+            <p><strong>Due Date:</strong> {new Date(viewTask?.dueDate).toLocaleDateString("en-GB")}</p>
             <p><strong>Assigned By:</strong> {viewTask?.creator?.username}</p>
             <p><strong>Assigned To:</strong> {viewTask?.assigneeTo?.username}</p>
           </div>
