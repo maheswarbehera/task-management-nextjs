@@ -1,7 +1,7 @@
 import * as React from "react"
 import { ChevronRight } from "lucide-react"
 import Image from "next/image"; 
- 
+import { LogOut } from "lucide-react";
 import {
   Collapsible,
   CollapsibleContent,
@@ -48,7 +48,7 @@ export function AppSidebar({
   ...props
 }) {
   const router = useRouter();
- const { logout } = useAuth();
+ const { user, logout } = useAuth();
   
   const handleLogout = () => { 
     logout();  
@@ -100,14 +100,15 @@ export function AppSidebar({
             </SidebarGroup>
           </Collapsible>
         ))}
-        <aside className="flex flex-col w-64 h-screen border-r bg-background">
+        <aside className="flex flex-col w-64 h-screen border-r">
       <div className="flex-1 p-4 overflow-y-auto">
         {/* Sidebar content */}
       </div>
 
       <div className="p-4 border-t">
-        <Button variant="outline" className="w-full" onClick={handleLogout}>
-          Logout
+
+        <Button className="w-full bg-red-600" onClick={handleLogout}>
+          Logout <LogOut className="w-5 h-5" />
         </Button>
       </div>
     </aside>
